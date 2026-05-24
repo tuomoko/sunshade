@@ -41,40 +41,31 @@ terrace:
     floor_level: "7th floor"
     estimated_above_ground_m: 21.5
   outline:
-    # North-up polygon, clockwise-ish around the terrace footprint.
-    # This is the transformed 5.3 m x 4.3 m rectangle.
-    - id: "south_west"
-      x: 0.00
-      y: 0.00
-    - id: "south"
-      x: 3.04
-      y: 0.00
-    - id: "east"
-      x: 6.79
-      y: 3.75
-    - id: "north"
-      x: 3.75
-      y: 6.79
     - id: "west"
       x: 0.00
       y: 3.04
+    - id: "north"
+      x: 3.75
+      y: 6.79
+    - id: "east"
+      x: 6.79
+      y: 3.75
+    - id: "south"
+      x: 3.04
+      y: 0.00
 
 railing:
   height_m: 1.25
   opacity: "mostly_transparent"
-  notes:
-    - "Use as a low obstruction only if needed."
   edges:
-    - start: {x: 0.00, y: 0.00}
-      end:   {x: 3.04, y: 0.00}
-    - start: {x: 3.04, y: 0.00}
-      end:   {x: 6.79, y: 3.75}
-    - start: {x: 6.79, y: 3.75}
+    - start: {x: 0.00, y: 3.04}
       end:   {x: 3.75, y: 6.79}
     - start: {x: 3.75, y: 6.79}
+      end:   {x: 6.79, y: 3.75}
+    - start: {x: 6.79, y: 3.75}
+      end:   {x: 3.04, y: 0.00}
+    - start: {x: 3.04, y: 0.00}
       end:   {x: 0.00, y: 3.04}
-    - start: {x: 0.00, y: 3.04}
-      end:   {x: 0.00, y: 0.00}
 
 poles:
   height_m: 3.60
@@ -103,32 +94,20 @@ poles:
 
 roof:
   underside_height_m: 3.60
-  model_treatment: "mostly_ignore_slats_for_shading"
-  notes:
-    - "Roof/slats are high above the terrace."
-    - "Slats are not practical to measure."
-    - "Treat slats as causing little or no major usable shade in the first simulation."
-    - "The roof is supported by the four poles."
-  supported_by:
-    - "pole_west"
-    - "pole_north"
-    - "pole_south"
-    - "pole_east"
+  model_treatment: "high_roof_strip"
 
-  approximate_supported_roof_polygon:
-    # Approximate polygon connecting the four pole centers.
-    # This is not necessarily the exact roof outer edge.
-    - {x: 1.20, y: 3.25}
-    - {x: 3.46, y: 5.52}
-    - {x: 5.52, y: 3.61}
-    - {x: 3.04, y: 1.41}
+  approximate_outer_roof_polygon:
+    - {x: 3.75, y: 6.79}   # north terrace corner
+    - {x: 6.95, y: 3.60}   # east/outside roof edge
+    - {x: 4.05, y: 0.70}   # south roof corner, shifted east
+    - {x: 1.20, y: 3.25}   # west roof edge near pole_west
 
   slats:
     measurable: false
     height_m: 3.60
     shading_importance: "low"
     simulation_treatment: "ignore_initially"
-    optional_future_treatment: "very_light_filtering"
+
 
 door:
   type: "balcony_door"
@@ -148,19 +127,12 @@ door:
 building_wall_obstructions:
   - id: "northeast_building_wall"
     type: "vertical_wall"
-    location_description: "Building wall/facade on the northeast side of the terrace."
     estimated_height_above_terrace_floor_m: 4.0
     base_z_m: 0.0
     top_z_m: 4.0
-    simulation_importance: "high"
-    notes:
-      - "Approximate dimensions from construction drawing and user observation."
-      - "Likely more important than the high roof slats for low-angle sun from NE/E."
-      - "Exact wall outline should be refined later if needed."
     approximate_edge:
-      # Approximate NE side near door/building facade.
       start: {x: 3.75, y: 6.79}
-      end:   {x: 6.79, y: 3.75}
+      end:   {x: 6.95, y: 3.60}
 
 zones:
   open_sky_zone:
