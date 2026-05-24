@@ -1,0 +1,215 @@
+# terrace.yaml
+# Input data for Helsinki rooftop terrace solar / shading simulation.
+# Coordinate system: north-up local Cartesian coordinates.
+# Units: meters and degrees unless otherwise noted.
+
+project:
+  name: "Helsinki Rooftop Terrace Solar Simulation"
+  description: "Approximate terrace geometry, roof, poles, railing, door, and NE wall obstruction."
+  version: "0.1"
+
+location:
+  city: "Helsinki"
+  country: "Finland"
+  latitude: 60.17
+  longitude: 24.94
+  timezone: "Europe/Helsinki"
+
+units:
+  length: "m"
+  angle: "deg"
+
+coordinate_system:
+  name: "north_up_local"
+  origin:
+    description: "South-west point of the north-up terrace polygon"
+    x: 0.0
+    y: 0.0
+    z: 0.0
+  axes:
+    x: "east"
+    y: "north"
+    z: "up"
+  notes:
+    - "North is positive Y."
+    - "East is positive X."
+    - "Coordinates are approximate, transformed from the construction drawing."
+
+terrace:
+  floor_z: 0.0
+  elevation:
+    floor_level: "7th floor"
+    estimated_above_ground_m: 21.5
+  outline:
+    # North-up polygon, clockwise-ish around the terrace footprint.
+    # This is the transformed 5.3 m x 4.3 m rectangle.
+    - id: "south_west"
+      x: 0.00
+      y: 0.00
+    - id: "south"
+      x: 3.04
+      y: 0.00
+    - id: "east"
+      x: 6.79
+      y: 3.75
+    - id: "north"
+      x: 3.75
+      y: 6.79
+    - id: "west"
+      x: 0.00
+      y: 3.04
+
+railing:
+  height_m: 1.25
+  opacity: "mostly_transparent"
+  notes:
+    - "Use as a low obstruction only if needed."
+  edges:
+    - start: {x: 0.00, y: 0.00}
+      end:   {x: 3.04, y: 0.00}
+    - start: {x: 3.04, y: 0.00}
+      end:   {x: 6.79, y: 3.75}
+    - start: {x: 6.79, y: 3.75}
+      end:   {x: 3.75, y: 6.79}
+    - start: {x: 3.75, y: 6.79}
+      end:   {x: 0.00, y: 3.04}
+    - start: {x: 0.00, y: 3.04}
+      end:   {x: 0.00, y: 0.00}
+
+poles:
+  height_m: 3.60
+  diameter_m: 0.17
+  radius_m: 0.085
+  items:
+    - id: "pole_west"
+      x: 1.20
+      y: 3.25
+      z_base: 0.0
+    - id: "pole_north"
+      x: 3.46
+      y: 5.52
+      z_base: 0.0
+    - id: "pole_south"
+      x: 3.04
+      y: 1.41
+      z_base: 0.0
+    - id: "pole_east"
+      x: 5.52
+      y: 3.61
+      z_base: 0.0
+  notes:
+    - "Locations are approximate from the construction drawing."
+    - "Measured diameter is 17 cm."
+
+roof:
+  underside_height_m: 3.60
+  model_treatment: "mostly_ignore_slats_for_shading"
+  notes:
+    - "Roof/slats are high above the terrace."
+    - "Slats are not practical to measure."
+    - "Treat slats as causing little or no major usable shade in the first simulation."
+    - "The roof is supported by the four poles."
+  supported_by:
+    - "pole_west"
+    - "pole_north"
+    - "pole_south"
+    - "pole_east"
+
+  approximate_supported_roof_polygon:
+    # Approximate polygon connecting the four pole centers.
+    # This is not necessarily the exact roof outer edge.
+    - {x: 1.20, y: 3.25}
+    - {x: 3.46, y: 5.52}
+    - {x: 5.52, y: 3.61}
+    - {x: 3.04, y: 1.41}
+
+  slats:
+    measurable: false
+    height_m: 3.60
+    shading_importance: "low"
+    simulation_treatment: "ignore_initially"
+    optional_future_treatment: "very_light_filtering"
+
+door:
+  type: "balcony_door"
+  center:
+    x: 4.95
+    y: 5.59
+    z: 0.0
+  width_m: 0.90
+  height_m: 2.10
+  opening:
+    direction: "outward_to_terrace"
+    swing_angle_deg: 90
+    clearance_radius_m: 0.90
+  notes:
+    - "Position and swing are approximate from the drawing."
+
+building_wall_obstructions:
+  - id: "northeast_building_wall"
+    type: "vertical_wall"
+    location_description: "Building wall/facade on the northeast side of the terrace."
+    estimated_height_above_terrace_floor_m: 4.0
+    base_z_m: 0.0
+    top_z_m: 4.0
+    simulation_importance: "high"
+    notes:
+      - "Approximate dimensions from construction drawing and user observation."
+      - "Likely more important than the high roof slats for low-angle sun from NE/E."
+      - "Exact wall outline should be refined later if needed."
+    approximate_edge:
+      # Approximate NE side near door/building facade.
+      start: {x: 3.75, y: 6.79}
+      end:   {x: 6.79, y: 3.75}
+
+zones:
+  open_sky_zone:
+    description: "Area previously thought to be fully covered; now treated as mostly open/non-covered."
+    approximate_polygon:
+      - {x: 0.00, y: 0.00}
+      - {x: 3.04, y: 0.00}
+      - {x: 3.04, y: 1.41}
+      - {x: 1.20, y: 3.25}
+      - {x: 0.00, y: 3.04}
+
+  high_roof_zone:
+    description: "Area below high roof/slat structure supported by poles."
+    approximate_polygon:
+      - {x: 1.20, y: 3.25}
+      - {x: 3.46, y: 5.52}
+      - {x: 5.52, y: 3.61}
+      - {x: 3.04, y: 1.41}
+    treatment:
+      direct_shading: "low_from_slats"
+      obstruction_height_m: 3.60
+
+simulation_defaults:
+  dates:
+    - "2026-03-21"
+    - "2026-05-15"
+    - "2026-06-21"
+    - "2026-08-15"
+    - "2026-09-21"
+  time_range:
+    start: "06:00"
+    end: "22:00"
+    interval_minutes: 15
+  grid:
+    spacing_m: 0.10
+  include:
+    poles: true
+    railing: false
+    roof_slats: false
+    northeast_wall: true
+  outputs:
+    - "geometry_plot"
+    - "shadow_polygons"
+    - "direct_sun_hours_heatmap"
+    - "time_series_sun_exposure"
+
+accuracy_notes:
+  - "Terrace polygon and pole coordinates are approximate."
+  - "NE wall height is approximated as 4 m above terrace floor."
+  - "Terrace elevation is approximated as 21.5 m above ground."
+  - "No major distant obstacles are included."
+  - "This file is intended as a starting point; refine with measured coordinates later."
